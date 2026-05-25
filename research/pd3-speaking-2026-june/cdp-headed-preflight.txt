@@ -1,0 +1,380 @@
+2026-05-25T13:07:32Z
+cdp is a shell-first Chrome DevTools Protocol CLI for coding agents.
+
+The project is being built around a long-running local attach daemon, compact
+JSON output, jq-friendly filtering, high-level browser debugging workflows, and
+cleanup routines such as `cdp page cleanup --json` for cron-safe tab hygiene.
+
+Usage:
+  cdp [command]
+
+Available Commands:
+  a11y          Inspect accessibility tree information
+  assert        Assert browser state with JSON diagnostics
+  browser       Inspect and prepare browser runtime modes
+  clear         Clear the value of the first matching form control
+  click         Click the first matching element for a CSS selector
+  completion    Generate the autocompletion script for the specified shell
+  connection    Manage disk-backed browser connection memory
+  console       Capture console and browser log messages from a page target
+  cron          Manage cdp-managed browser runtime cron tasks
+  css           Inspect CSS and layout data
+  daemon        Manage the long-running Chrome attach daemon
+  describe      Describe the command tree as JSON for agents
+  dialog        Observe and handle JavaScript dialogs
+  doctor        Run local readiness checks
+  dom           Inspect DOM nodes
+  drag          Drag the first matching element by a delta
+  emulate       Apply or clear target emulation settings
+  eval          Evaluate JavaScript in a page target
+  events        Observe bounded raw CDP event streams
+  exit-codes    Print stable process exit codes
+  explain-error Explain stable cdp error codes and recovery commands
+  file          Set a file input to a local file path without printing file contents
+  fill          Set the value of the first matching form control
+  focus         Focus the first matching element for a CSS selector
+  form          Inspect live form control state
+  frames        List the page frame tree for the selected target
+  help          Help about any command
+  hover         Dispatch pointer hover events over the first matching element
+  html          Extract compact HTML for a CSS selector
+  insert-text   Insert text through the browser input pipeline
+  layout        Run page layout diagnostics
+  memory        Collect memory counters and heap artifacts
+  network       Inspect network requests from a page target
+  observe       Summarize visible interactive elements for agent planning
+  open          Open a URL in a new tab or navigate a selected page
+  page          Control an open page target
+  pages         List open pages and tabs
+  perf          Collect lightweight performance diagnostics
+  press         Press a key on the focused element or an optional selector
+  protocol      Discover and execute raw CDP methods
+  schema        Print stable JSON output schemas
+  screenshot    Capture a page screenshot to a file
+  select        Select an option value in the first matching select control
+  snapshot      Print compact visible text from a page target
+  storage       Inspect and mutate browser application storage
+  targets       List browser targets
+  text          Extract compact visible text for a CSS selector
+  type          Type text into the first matching editable element
+  version       Print version information
+  wait          Wait for page conditions
+  workflow      Run high-level browser debugging workflows
+
+Flags:
+      --active-browser-probe   actively connect to Chrome during daemon status/start checks; may trigger a Chrome remote-debugging prompt
+      --allow-over-budget      human override: allow creating browser tabs even when the selected profile is over the cdp resource budget
+      --auto-connect           select Chrome's default-profile remote debugging flow for daemon lifecycle commands
+      --autoConnect            alias for --auto-connect
+      --browser-mode string    primary browser runtime selector: headed or headless; can also be set with CDP_BROWSER_MODE
+      --browser-url string     Chrome DevTools browser URL for daemon lifecycle and connection management; can also be set with CDP_BROWSER_URL
+      --browserMode string     alias for --browser-mode
+      --browserUrl string      alias for --browser-url
+      --channel string         Chrome channel for --auto-connect: stable, beta, canary, or dev (default "stable")
+      --compact                emit compact JSON without indentation
+      --config string          path to config file
+      --connection string      advanced named browser endpoint override from local state
+      --debug                  write debug details to stderr
+  -h, --help                   help for cdp
+      --jq string              filter JSON output with jq expression; implies --json
+      --json                   emit JSON on stdout
+      --profile string         named cdp-cli profile to use (default "default")
+      --state-dir string       directory for local cdp-cli state; defaults to $HOME/.cdp-cli
+      --timeout duration       ceiling-bound command execution, such as 30s or 2m
+      --user-data-dir string   Chrome user data directory for --auto-connect
+
+Use "cdp [command] --help" for more information about a command.
+Collect rendered SERP artifacts and deduped research candidates
+
+Usage:
+  cdp workflow web-research serp [flags]
+
+Flags:
+      --blocked-failure-threshold int   consecutive blocked SERP pages required before --fast-fail-blocked stops scheduling (default 3)
+      --candidate-out string            path for deduped candidates JSON
+      --fast-fail-blocked               stop SERP sampling early after repeated consent, CAPTCHA, auth, or bot-check pages
+  -h, --help                            help for serp
+      --max-candidates int              maximum deduped candidates to emit; use 0 for no limit (default 100)
+      --min-html-chars int              warning threshold for extracted HTML character count (default 64)
+      --min-markdown-words int          warning threshold for Markdown word count (default 5)
+      --min-visible-words int           warning threshold for visible text word count (default 5)
+      --out-dir string                  directory for SERP artifacts and candidate files
+      --parallel int                    maximum parallel SERP tabs, capped at 3 (default 3)
+      --progress string                 progress event stream: none or stderr (default "none")
+      --query-file string               newline-delimited search queries to sample
+      --result-pages int                SERP result pages per query to sample, capped at 3 (default 1)
+      --serp string                     SERP extractor: google, bing, brave, duckduckgo, or kagi (default "google")
+      --wait duration                   maximum time to wait for each rendered SERP (default 15s)
+      --wait-until string               readiness gate: useful-content, load, or dom-stable (default "useful-content")
+
+Global Flags:
+      --active-browser-probe   actively connect to Chrome during daemon status/start checks; may trigger a Chrome remote-debugging prompt
+      --allow-over-budget      human override: allow creating browser tabs even when the selected profile is over the cdp resource budget
+      --auto-connect           select Chrome's default-profile remote debugging flow for daemon lifecycle commands
+      --autoConnect            alias for --auto-connect
+      --browser-mode string    primary browser runtime selector: headed or headless; can also be set with CDP_BROWSER_MODE
+      --browser-url string     Chrome DevTools browser URL for daemon lifecycle and connection management; can also be set with CDP_BROWSER_URL
+      --browserMode string     alias for --browser-mode
+      --browserUrl string      alias for --browser-url
+      --channel string         Chrome channel for --auto-connect: stable, beta, canary, or dev (default "stable")
+      --compact                emit compact JSON without indentation
+      --config string          path to config file
+      --connection string      advanced named browser endpoint override from local state
+      --debug                  write debug details to stderr
+      --jq string              filter JSON output with jq expression; implies --json
+      --json                   emit JSON on stdout
+      --profile string         named cdp-cli profile to use (default "default")
+      --state-dir string       directory for local cdp-cli state; defaults to $HOME/.cdp-cli
+      --timeout duration       ceiling-bound command execution, such as 30s or 2m
+      --user-data-dir string   Chrome user data directory for --auto-connect
+Extract selected research pages with bounded tab concurrency
+
+Usage:
+  cdp workflow web-research extract [flags]
+
+Flags:
+  -h, --help                     help for extract
+      --max-pages int            maximum URLs to extract; use 0 for no limit (default 100)
+      --min-html-chars int       warning threshold for extracted HTML character count (default 64)
+      --min-markdown-words int   warning threshold for Markdown word count (default 5)
+      --min-visible-words int    warning threshold for visible text word count (default 5)
+      --out-dir string           directory for page artifacts
+      --parallel int             maximum parallel page tabs; default 4, hard-capped at 10 and bounded by remaining tab budget (default 4)
+      --selector string          CSS selector to extract rendered research content from (default "body")
+      --url-file string          newline-delimited URLs to extract
+      --wait duration            maximum time to wait for each rendered page (default 15s)
+      --wait-until string        readiness gate: useful-content, load, or dom-stable (default "useful-content")
+
+Global Flags:
+      --active-browser-probe   actively connect to Chrome during daemon status/start checks; may trigger a Chrome remote-debugging prompt
+      --allow-over-budget      human override: allow creating browser tabs even when the selected profile is over the cdp resource budget
+      --auto-connect           select Chrome's default-profile remote debugging flow for daemon lifecycle commands
+      --autoConnect            alias for --auto-connect
+      --browser-mode string    primary browser runtime selector: headed or headless; can also be set with CDP_BROWSER_MODE
+      --browser-url string     Chrome DevTools browser URL for daemon lifecycle and connection management; can also be set with CDP_BROWSER_URL
+      --browserMode string     alias for --browser-mode
+      --browserUrl string      alias for --browser-url
+      --channel string         Chrome channel for --auto-connect: stable, beta, canary, or dev (default "stable")
+      --compact                emit compact JSON without indentation
+      --config string          path to config file
+      --connection string      advanced named browser endpoint override from local state
+      --debug                  write debug details to stderr
+      --jq string              filter JSON output with jq expression; implies --json
+      --json                   emit JSON on stdout
+      --profile string         named cdp-cli profile to use (default "default")
+      --state-dir string       directory for local cdp-cli state; defaults to $HOME/.cdp-cli
+      --timeout duration       ceiling-bound command execution, such as 30s or 2m
+      --user-data-dir string   Chrome user data directory for --auto-connect
+{
+  "daemon": {
+    "state": "running",
+    "message": "daemon keepalive process is running",
+    "browser_mode": "headed",
+    "connection_mode": "auto_connect",
+    "requires_user_allow": true,
+    "default_profile_flow": true,
+    "process_running": true,
+    "runtime": {
+      "pid": 10067,
+      "started_at": "2026-05-25T13:02:02Z",
+      "browser_mode": "headed",
+      "connection_mode": "auto_connect",
+      "socket_path": "/Users/pankaj/.cdp-cli/daemon.sock",
+      "log_path": "/Users/pankaj/.cdp-cli/daemon.log"
+    },
+    "browser_probe": {
+      "state": "active_probe_skipped",
+      "message": "Chrome auto-connect state exists; active browser probing was skipped to avoid a remote-debugging prompt",
+      "connection_mode": "auto_connect",
+      "channel": "stable",
+      "web_socket_debugger_url": false,
+      "remediation_commands": [
+        "cdp daemon status --json",
+        "cdp doctor --check daemon --json",
+        "cdp doctor --check browser-health --json",
+        "cdp daemon logs --tail 50 --json"
+      ]
+    },
+    "next_commands": [
+      "cdp pages --json",
+      "cdp doctor --check browser-health --json",
+      "cdp daemon logs --tail 50 --json"
+    ],
+    "human_repair_commands": [
+      "cdp daemon stop --json"
+    ],
+    "health": {
+      "attached_page_count": 0,
+      "browser_mode": "headed",
+      "connection_mode": "auto_connect",
+      "crash_capture": "not_enabled",
+      "daemon_process_running": true,
+      "daemon_processes_by_mode": {
+        "headed": {
+          "browser_mode": "headed",
+          "chrome_process_count": 12,
+          "connected": true,
+          "daemon_pid": 10067,
+          "daemon_process_running": true,
+          "daemon_rpc_ready": true,
+          "process_type_counts": {
+            "GPU": 1,
+            "audio.mojom.AudioService": 1,
+            "browser": 1,
+            "network.mojom.NetworkService": 1,
+            "renderer": 6,
+            "storage.mojom.StorageService": 1,
+            "video_capture.mojom.VideoCaptureService": 1
+          },
+          "socket_path": "/Users/pankaj/.cdp-cli/daemon.sock",
+          "state": "connected"
+        },
+        "headless": {
+          "browser_mode": "headless",
+          "chrome_process_count": 9,
+          "connected": true,
+          "daemon_pid": 69988,
+          "daemon_process_running": true,
+          "daemon_rpc_ready": true,
+          "managed_chrome_pid": 69986,
+          "managed_chrome_port": "52294",
+          "process_type_counts": {
+            "GPU": 1,
+            "browser": 1,
+            "network.mojom.NetworkService": 1,
+            "renderer": 5,
+            "storage.mojom.StorageService": 1
+          },
+          "socket_path": "/Users/pankaj/.cdp-cli/headless/daemon.sock",
+          "state": "connected"
+        }
+      },
+      "daemon_rpc_ready": true,
+      "last_browser_keepalive_error": "2026-05-25T13:01:59Z hold_connection_ended context canceled",
+      "max_tabs": 15,
+      "max_windows": 5,
+      "reasons": [],
+      "recent_crashes": [],
+      "recent_log_errors": 0,
+      "recent_log_warnings": 10,
+      "resource_budget": {
+        "tab_count": 1,
+        "max_tabs": 15,
+        "tabs_over_budget": false,
+        "window_count": 1,
+        "max_windows": 5,
+        "windows_over_budget": false,
+        "window_count_known": true,
+        "target_type_counts": {
+          "page": 1,
+          "service_worker": 3
+        },
+        "attached_page_count": 0,
+        "connection_mode": "auto_connect"
+      },
+      "runtime": {
+        "browser_mode": "headed",
+        "pid": 10067,
+        "socket_path": "/Users/pankaj/.cdp-cli/daemon.sock",
+        "started_at": "2026-05-25T13:02:02Z"
+      },
+      "state": "healthy",
+      "tab_count": 1,
+      "tabs_over_budget": false,
+      "target_type_counts": {
+        "page": 1,
+        "service_worker": 3
+      },
+      "window_count": 1,
+      "window_count_known": true,
+      "windows_over_budget": false
+    }
+  },
+  "health": {
+    "attached_page_count": 0,
+    "browser_mode": "headed",
+    "connection_mode": "auto_connect",
+    "crash_capture": "not_enabled",
+    "daemon_process_running": true,
+    "daemon_processes_by_mode": {
+      "headed": {
+        "browser_mode": "headed",
+        "chrome_process_count": 12,
+        "connected": true,
+        "daemon_pid": 10067,
+        "daemon_process_running": true,
+        "daemon_rpc_ready": true,
+        "process_type_counts": {
+          "GPU": 1,
+          "audio.mojom.AudioService": 1,
+          "browser": 1,
+          "network.mojom.NetworkService": 1,
+          "renderer": 6,
+          "storage.mojom.StorageService": 1,
+          "video_capture.mojom.VideoCaptureService": 1
+        },
+        "socket_path": "/Users/pankaj/.cdp-cli/daemon.sock",
+        "state": "connected"
+      },
+      "headless": {
+        "browser_mode": "headless",
+        "chrome_process_count": 9,
+        "connected": true,
+        "daemon_pid": 69988,
+        "daemon_process_running": true,
+        "daemon_rpc_ready": true,
+        "managed_chrome_pid": 69986,
+        "managed_chrome_port": "52294",
+        "process_type_counts": {
+          "GPU": 1,
+          "browser": 1,
+          "network.mojom.NetworkService": 1,
+          "renderer": 5,
+          "storage.mojom.StorageService": 1
+        },
+        "socket_path": "/Users/pankaj/.cdp-cli/headless/daemon.sock",
+        "state": "connected"
+      }
+    },
+    "daemon_rpc_ready": true,
+    "last_browser_keepalive_error": "2026-05-25T13:01:59Z hold_connection_ended context canceled",
+    "max_tabs": 15,
+    "max_windows": 5,
+    "reasons": [],
+    "recent_crashes": [],
+    "recent_log_errors": 0,
+    "recent_log_warnings": 10,
+    "resource_budget": {
+      "tab_count": 1,
+      "max_tabs": 15,
+      "tabs_over_budget": false,
+      "window_count": 1,
+      "max_windows": 5,
+      "windows_over_budget": false,
+      "window_count_known": true,
+      "target_type_counts": {
+        "page": 1,
+        "service_worker": 3
+      },
+      "attached_page_count": 0,
+      "connection_mode": "auto_connect"
+    },
+    "runtime": {
+      "browser_mode": "headed",
+      "pid": 10067,
+      "socket_path": "/Users/pankaj/.cdp-cli/daemon.sock",
+      "started_at": "2026-05-25T13:02:02Z"
+    },
+    "state": "healthy",
+    "tab_count": 1,
+    "tabs_over_budget": false,
+    "target_type_counts": {
+      "page": 1,
+      "service_worker": 3
+    },
+    "window_count": 1,
+    "window_count_known": true,
+    "windows_over_budget": false
+  },
+  "ok": true
+}
