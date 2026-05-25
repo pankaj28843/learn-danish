@@ -1,1 +1,25 @@
+# macOS / Finder
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100/
+.Trashes/
+
+# Windows metadata
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Local scratch / generated artifacts
 tmp/
+.tmp/
+*.tmp
+*.log
+
+# Python local environments and caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
